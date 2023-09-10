@@ -2,8 +2,9 @@ import React, { useState, useEffect } from "react";
 import { db, auth } from "./firebase/firebase.js"
 import { collection, onSnapshot, addDoc, orderBy, query } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
-import signIn from './components/Authentication/signInWithGoogle';
-import signOut from './components/Authentication/signOutWithGoogle';
+import GoogleSignInButton from './components/Authentication/signInWithGoogle';
+import SignOutButton from './components/Authentication/signOutWithGoogle';
+import SignOutWithGoogle from "./components/Authentication/signOutWithGoogle";
 
 function App() {
     const [user] = useAuthState(auth);
@@ -48,7 +49,7 @@ function App() {
       <div className="App">
           <header>
               <h1>React Firebase Chat</h1>
-              <signOut />
+              <SignOutWithGoogle />
           </header>
 
           <main>
@@ -62,7 +63,7 @@ function App() {
                       ))}
                   </>
               ) : (
-                  <signIn />
+                  <GoogleSignInButton />
               )}
           </main>
 
