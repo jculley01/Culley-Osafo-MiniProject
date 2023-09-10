@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { db, auth } from "./firebase/firebase.js"
+import { db, auth, addUserToFirestore } from "./firebase/firebase.js"
 import { collection, onSnapshot, addDoc, orderBy, query } from "firebase/firestore";
 import { useAuthState } from "react-firebase-hooks/auth";
 import GoogleSignInButton from './components/Authentication/signInWithGoogle';
@@ -10,6 +10,27 @@ function App() {
     const [user] = useAuthState(auth);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+
+    useEffect(() => {
+        const unsubscribe = auth.onAuthStateChanged((user) => {
+            if (user) {
+                // User is signed in, so add their information to Firestore
+                addUserToFirestore(user)
+                    .then(() => {
+                        console.log('User added to Firestore');
+                    })
+                    .catch((error) => {
+                        console.error('Error adding user to Firestore:', error);
+                    });
+            } else {
+                // User is signed out
+                console.log('User signed out');
+            }
+        });
+
+        // Cleanup the listener when the component unmounts
+        return () => unsubscribe();
+    }, []);
 
     useEffect(() => {
         const q = query(collection(db, "messages"), orderBy("timestamp"));
