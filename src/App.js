@@ -1,16 +1,79 @@
-import React from 'react';
-import { BrowserRouter as Router, Switch, Route } from 'react-router-dom';
-import SignInWithGoogle from './components/Authentication/signInWithGoogle';
-import UserSearch from './components/UserSearch/userSearch';
-import Chat from './components/Messaging/chat';
+import React, { useState, useEffect } from "react";
+import { db, auth } from "./firebase/firebase.js"
+import { collection, onSnapshot, addDoc, orderBy, query } from "firebase/firestore";
+import { useAuthState } from "react-firebase-hooks/auth";
+import signIn from './components/Authentication/signInWithGoogle';
+import signOut from './components/Authentication/signOutWithGoogle';
 
 function App() {
+    const [user] = useAuthState(auth);
+    const [messages, setMessages] = useState([]);
+    const [input, setInput] = useState("");
+
+    useEffect(() => {
+        const q = query(collection(db, "messages"), orderBy("timestamp"));
+        const unsubscribe = onSnapshot(q, (snapshot) => {
+            setMessages(
+                snapshot.docs.map((doc) => ({
+                    id: doc.id,
+                    data: doc.data(),
+                }))
+            );
+        });
+
+        return () => unsubscribe();
+    }, []);
+
+    const handleInputChange = (e) => {
+        setInput(e.target.value);
+    };
+
+    const sendMessage = async (e) => {
+        e.preventDefault();
+
+        if (input.trim()) {
+            await addDoc(collection(db, "messages"), {
+                text: input,
+                timestamp: new Date(),
+                uid: user.uid,
+                displayName: user.displayName,
+            });
+
+            setInput("");
+        }
+    }
+
+
   return (
-      <div>
-        <header>
-          <h1>My React Chat App</h1>
-        </header>
-          <SignInWithGoogle/>
+      <div className="App">
+          <header>
+              <h1>React Firebase Chat</h1>
+              <signOut />
+          </header>
+
+          <main>
+              {user ? (
+                  <>
+                      {messages.map(({ id, data }) => (
+                          <div key={id} className={`message ${data.uid === user.uid ? "sent" : "received"}`}>
+                              <span className="displayName">{data.displayName}: </span>
+                              <span className="messageText">{data.text}</span>
+                          </div>
+                      ))}
+                  </>
+              ) : (
+                  <signIn />
+              )}
+          </main>
+
+          {user && (
+              <footer>
+                  <form onSubmit={sendMessage}>
+                      <input value={input} onChange={handleInputChange} placeholder="Type a message" />
+                      <button type="submit">Send</button>
+                  </form>
+              </footer>
+          )}
       </div>
 );
 }
