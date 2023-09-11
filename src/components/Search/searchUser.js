@@ -7,6 +7,18 @@ function UserSearch({ firestore }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+    const Divider = () => {
+        return (
+            <hr
+                style={{
+                    margin: '20px 0',
+                    border: 'none',
+                    borderBottom: '1px solid #ccc',
+                }}
+            />
+        );
+    };
+
     useEffect(() => {
         if (searchTerm.trim() === '') {
             setSearchResults([]); // Clear results if the search term is empty
@@ -20,8 +32,6 @@ function UserSearch({ firestore }) {
                 usersCollection,
 
                 or(where('displayName', '==', searchTerm ),
-
-
                 where('email', '==', searchTerm)),
 
                 orderBy('displayName'),
@@ -57,11 +67,12 @@ function UserSearch({ firestore }) {
         <div>
             <input
                 type="text"
-                placeholder="Search for users by name or email"
+                placeholder="Search for users"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <ChatRoom selectedUsers={{selectedUsers}}/>
+            <ChatRoom />
+            <Divider/>
             <Select
                 isMulti
                 options={searchResults}
@@ -69,6 +80,7 @@ function UserSearch({ firestore }) {
                 onChange={handleUserSelect}
                 placeholder="Select users"
             />
+            <Divider/>
         </div>
     );
 }
