@@ -5,6 +5,8 @@ import { useAuthState } from "react-firebase-hooks/auth";
 import GoogleSignInButton from './components/Authentication/signInWithGoogle';
 import SignOutButton from './components/Authentication/signOutWithGoogle';
 import SignOutWithGoogle from "./components/Authentication/signOutWithGoogle";
+import SearchUser from "./components/Search/searchUser";
+import UserSearch from "./components/Search/searchUser";
 
 function App() {
     const [user] = useAuthState(auth);
@@ -70,10 +72,11 @@ function App() {
       <div className="App">
           <header>
               <h1>React Firebase Chat</h1>
-              <SignOutWithGoogle />
+              {user && <SignOutWithGoogle />}
           </header>
 
           <main>
+              {user && <UserSearch />}
               {user ? (
                   <>
                       {messages.map(({ id, data }) => (
@@ -83,6 +86,7 @@ function App() {
                           </div>
                       ))}
                   </>
+
               ) : (
                   <GoogleSignInButton />
               )}
