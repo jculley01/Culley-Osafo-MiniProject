@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import {collection, query, where, orderBy, limit, getDocs, getFirestore} from 'firebase/firestore';
+import {collection, query, where, orderBy, limit, getDocs, getFirestore, or} from 'firebase/firestore';
 import Select from 'react-select'; // Import react-select
 function UserSearch({ firestore }) {
     const db = getFirestore();
@@ -15,12 +15,25 @@ function UserSearch({ firestore }) {
             // Reference to the "users" collection
             const usersCollection = collection(db, 'users');
             // Query Firestore for users matching the search term
-            const q = query(usersCollection, where('displayName', '>=', searchTerm), orderBy('displayName'), limit(10));
+            const q = query(
+                usersCollection,
+
+                or(where('displayName', '==', searchTerm ),
+
+
+                where('email', '==', searchTerm)),
+
+                orderBy('displayName'),
+                limit(10)
+            )
+
+
             try {
                 const querySnapshot = await getDocs(q);
+
                 const results = [];
                 querySnapshot.forEach((doc) => {
-                    results.push(doc.data().displayName); // Format data for react-select
+                    results.push({ value: doc.id, label: doc.data().displayName }); // Format data for react-select
                 });
                 setSearchResults(results);
             } catch (error) {
@@ -44,7 +57,7 @@ function UserSearch({ firestore }) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={handleSearch}>Search</button>
+            <button onClick={handleSearch}>New Function</button>
             <Select
                 isMulti
                 options={searchResults}
