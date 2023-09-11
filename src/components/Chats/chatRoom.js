@@ -1,17 +1,34 @@
 // src/components/Chatroom.js
 import React, { useState } from 'react';
-import { getFirestore } from 'firebase/firestore';
+import {getFirestore, addDoc, collection, getDocs, query, getAuth, where, limit} from 'firebase/firestore';
 
-const ChatRoom = () => {
+const ChatRoom = ({ selectedUsers }) => {
     const db = getFirestore();
-    const [chatRoom, makeChatRoom] = useState('');
-
 
     const createChatroom = async () => {
-        /*const chatroomRef = await db.collection('chatrooms').add({
-            name: chatroomName,
-        });
-        setChatroomId(chatroomRef.id);*/
+        /*const [chatRoomName, setChatRoomName] = useState('');*/
+        const chatroomCollection = collection(db, 'chatrooms');
+
+        const q = query(
+            chatroomCollection,
+
+            where('users', 'in', [[selectedUsers]] ),
+
+            limit(10)
+        );
+        const querySnapshot = await getDocs(q);
+
+        try {
+            if (querySnapshot.empty || selectedUsers != []) {
+                await addDoc(collection(db, 'chatroom'), {
+                    timestamp: new Date(),
+                    users: selectedUsers,
+                });
+            }
+        } catch (error) {
+            console.error('Error creating chatroom:', error);
+        }
+
         console.log('TEST: Chatroom has been created');
     };
     createChatroom();

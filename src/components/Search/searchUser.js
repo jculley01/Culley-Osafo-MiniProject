@@ -61,7 +61,7 @@ function UserSearch({ firestore }) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <ChatRoom />
+            <ChatRoom selectedUsers={{selectedUsers}}/>
             <Select
                 isMulti
                 options={searchResults}
