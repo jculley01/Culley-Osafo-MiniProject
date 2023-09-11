@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import {collection, query, where, orderBy, limit, getDocs, getFirestore, or} from 'firebase/firestore';
 import Select from 'react-select'; // Import react-select
+import ChatRoom from "../Chats/chatRoom";
 function UserSearch({ firestore }) {
     const db = getFirestore();
     const [searchTerm, setSearchTerm] = useState('');
@@ -42,9 +43,12 @@ function UserSearch({ firestore }) {
         };
         getUsers();
     }, [searchTerm, firestore]);
-    const handleSearch = () => {
+
+    const addUsersToChatroom = (selectedUsers) => { //UNUSED
         // Trigger the search when the user clicks the search button
         // You can also update the results as the user types without this button
+        const chat = ChatRoom();
+        console.log('Button pressed');
     };
     const handleUserSelect = (selectedOptions) => {
         setSelectedUsers(selectedOptions);
@@ -57,7 +61,7 @@ function UserSearch({ firestore }) {
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
             />
-            <button onClick={handleSearch}>New Function</button>
+            <ChatRoom />
             <Select
                 isMulti
                 options={searchResults}
