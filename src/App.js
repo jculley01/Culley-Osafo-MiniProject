@@ -7,6 +7,7 @@ import SignOutButton from './components/Authentication/signOutWithGoogle';
 import SignOutWithGoogle from "./components/Authentication/signOutWithGoogle";
 import SearchUser from "./components/Search/searchUser";
 import UserSearch from "./components/Search/searchUser";
+import './App.css';
 
 function App() {
     const [user] = useAuthState(auth);
@@ -74,28 +75,34 @@ function App() {
               <h1>React Firebase Chat</h1>
               {user && <SignOutWithGoogle />}
           </header>
-
+          <Divider/>
           <main>
               {user && <UserSearch />}
               {user ? (
-                  <>
+                  <div className="messages-container">
                       {messages.map(({ id, data }) => (
-                          <div key={id} className={`message ${data.uid === user.uid ? "sent" : "received"}`}>
+                          <div
+                              key={id}
+                              className={`message ${data.uid === user.uid ? 'sent' : 'received'}`}
+                          >
                               <span className="displayName">{data.displayName}: </span>
                               <span className="messageText">{data.text}</span>
                           </div>
                       ))}
-                  </>
-
+                  </div>
               ) : (
                   <GoogleSignInButton />
               )}
           </main>
-
+          <Divider/>
           {user && (
               <footer>
                   <form onSubmit={sendMessage}>
-                      <input value={input} onChange={handleInputChange} placeholder="Type a message" />
+                      <input
+                          value={input}
+                          onChange={handleInputChange}
+                          placeholder="Type a message"
+                      />
                       <button type="submit">Send</button>
                   </form>
               </footer>
@@ -103,6 +110,19 @@ function App() {
       </div>
 );
 }
+
+const Divider = () => {
+    return (
+        <hr
+            style={{
+                margin: '20px 0',
+                border: 'none',
+                borderBottom: '1px solid #ccc',
+            }}
+        />
+    );
+};
+
 
 export default App;
 
