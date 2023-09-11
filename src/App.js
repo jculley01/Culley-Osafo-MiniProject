@@ -17,7 +17,7 @@ function App() {
                 // User is signed in, so add their information to Firestore
                 addUserToFirestore(user)
                     .then(() => {
-                        console.log('User added to Firestore');
+                        console.log('Successful User Query');
                     })
                     .catch((error) => {
                         console.error('Error adding user to Firestore:', error);
