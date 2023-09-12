@@ -84,7 +84,7 @@ function App() {
           </header>
           <Divider/>
           <main>
-              {user && <UserSearch onSearch={{handleSelectedUsers}}/>}
+              {user && <UserSearch/>}
               {user ? (
                   <div className="messages-container">
                       {messages.map(({ id, data }) => (
