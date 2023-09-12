@@ -1,7 +1,7 @@
 import React from 'react';
 import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
 
-const GoogleSignInButton = () => {
+const GoogleSignInButton = ({ onSignIn }) => {
     const handleGoogleSignIn = () => {
         const auth = getAuth();
         const provider = new GoogleAuthProvider();
@@ -13,8 +13,12 @@ const GoogleSignInButton = () => {
                 const token = credential.accessToken;
                 // The signed-in user info.
                 const user = result.user;
+                const userName = user.displayName;
+                console.log("user: ", user);
                 // IdP data available using getAdditionalUserInfo(result)
-                // ...
+
+                // Call the onSignIn function and pass the userName
+                onSignIn(userName);
             })
             .catch((error) => {
                 // Handle Errors here.
