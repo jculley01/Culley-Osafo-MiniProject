@@ -13,6 +13,12 @@ function App() {
     const [user] = useAuthState(auth);
     const [messages, setMessages] = useState([]);
     const [input, setInput] = useState("");
+    const [userName, setUserName] = useState('');
+    const [selectedUsers, setSelectedUsers] = useState("");
+
+    const handleSignIn = (userName) => {
+        setUserName(userName);
+    };
 
     useEffect(() => {
         const unsubscribe = auth.onAuthStateChanged((user) => {
@@ -73,11 +79,12 @@ function App() {
       <div className="App">
           <header>
               <h1>React Firebase Chat</h1>
+              {userName && user && <h2>Welcome, {userName}</h2>}
               {user && <SignOutWithGoogle />}
           </header>
           <Divider/>
           <main>
-              {user && <UserSearch />}
+              {user && <UserSearch onSearch={{handleSelectedUsers}}/>}
               {user ? (
                   <div className="messages-container">
                       {messages.map(({ id, data }) => (
@@ -91,10 +98,11 @@ function App() {
                       ))}
                   </div>
               ) : (
-                  <GoogleSignInButton />
+                  <GoogleSignInButton onSignIn={handleSignIn} />
               )}
           </main>
           <Divider/>
+
           {user && (
               <footer>
                   <form onSubmit={sendMessage}>

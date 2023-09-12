@@ -13,8 +13,6 @@ const ChatRoom = ({ selectedUsers }) => {
     const createChatroom = async () => {
         /*const [chatRoomName, setChatRoomName] = useState('');*/
         const chatroomCollection = collection(db, 'chatrooms');
-        const userCollection = collection(db, 'users');
-
         const q = query(
             chatroomCollection,
 
