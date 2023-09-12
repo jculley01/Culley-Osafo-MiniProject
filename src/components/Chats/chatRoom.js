@@ -1,13 +1,19 @@
 // src/components/Chatroom.js
 import React, { useState } from 'react';
-import {getFirestore, addDoc, collection, getDocs, query, getAuth, where, limit, doc, updateDoc, setDoc} from 'firebase/firestore';
+import { getAuth } from 'firebase/auth';
+import { auth } from "../../firebase/firebase.js"
+import {getFirestore, addDoc, collection, getDocs, query, where, limit, doc, updateDoc, setDoc, arrayUnion} from 'firebase/firestore';
+import {useAuthState} from "react-firebase-hooks/auth";
 
 const ChatRoom = ({ selectedUsers }) => {
     const db = getFirestore();
+    const [user] = useAuthState(auth);
+
 
     const createChatroom = async () => {
         /*const [chatRoomName, setChatRoomName] = useState('');*/
         const chatroomCollection = collection(db, 'chatrooms');
+        const userCollection = collection(db, 'users');
 
         const q = query(
             chatroomCollection,
@@ -19,22 +25,32 @@ const ChatRoom = ({ selectedUsers }) => {
         const querySnapshot = await getDocs(q);
 
         try {
+            console.log(user.uid);
             if (querySnapshot.empty && selectedUsers[0] !== undefined) {
-                const chatRoomRef = doc(collection(db, 'chatroom'));
-
-                await setDoc(chatRoomRef, {
+                const chatRoomRef = await addDoc(collection(db, 'chatroom'), {
                     timestamp: new Date(),
-                    users: selectedUsers[0].label,
+                    users: [selectedUsers[0].label],
                 });
+
+
                 let a = 1;
 
                 while (selectedUsers[a] !== undefined) {
                     await updateDoc(chatRoomRef, {
-                        users: selectedUsers[a].label,
+                        users: arrayUnion(selectedUsers[a].label),
                     });
                     a = a + 1;
                 }
-                console.log('Printing value:', selectedUsers[0].label);
+                //Add current user to chatroom
+                const currentUser = doc(userCollection, user.uid);
+                console.log(currentUser)
+
+
+                await updateDoc(chatRoomRef, {
+                    users: arrayUnion(currentUser.displayName),
+                });
+
+                console.log('Printing value:', selectedUsers);
                 console.log('TEST: Chatroom has been created');
 
             } else {
