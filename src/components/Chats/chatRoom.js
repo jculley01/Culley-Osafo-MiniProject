@@ -1,6 +1,6 @@
 // src/components/Chatroom.js
 import React, { useState } from 'react';
-import {getFirestore, addDoc, collection, getDocs, query, getAuth, where, limit} from 'firebase/firestore';
+import {getFirestore, addDoc, collection, getDocs, query, getAuth, where, limit, doc, updateDoc, setDoc} from 'firebase/firestore';
 
 const ChatRoom = ({ selectedUsers }) => {
     const db = getFirestore();
@@ -12,26 +12,41 @@ const ChatRoom = ({ selectedUsers }) => {
         const q = query(
             chatroomCollection,
 
-            where('users', 'in', [[selectedUsers]] ),
+            where('users', 'array-contains', selectedUsers),
 
             limit(10)
         );
         const querySnapshot = await getDocs(q);
 
         try {
-            if (querySnapshot.empty || selectedUsers != []) {
-                await addDoc(collection(db, 'chatroom'), {
+            if (querySnapshot.empty && selectedUsers[0] !== undefined) {
+                const chatRoomRef = doc(collection(db, 'chatroom'));
+
+                await setDoc(chatRoomRef, {
                     timestamp: new Date(),
-                    users: selectedUsers,
+                    users: selectedUsers[0].label,
                 });
+                let a = 1;
+
+                while (selectedUsers[a] !== undefined) {
+                    await updateDoc(chatRoomRef, {
+                        users: selectedUsers[a].label,
+                    });
+                    a = a + 1;
+                }
+                console.log('Printing value:', selectedUsers[0].label);
+                console.log('TEST: Chatroom has been created');
+
+            } else {
+                console.log('No selected user');
             }
         } catch (error) {
             console.error('Error creating chatroom:', error);
         }
 
-        console.log('TEST: Chatroom has been created');
+
     };
-    createChatroom();
+    /*createChatroom();*/
 
     return (
         <button onClick={createChatroom}>Add Users to Chatroom</button>

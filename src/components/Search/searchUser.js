@@ -7,6 +7,8 @@ function UserSearch({ firestore }) {
     const [searchTerm, setSearchTerm] = useState('');
     const [searchResults, setSearchResults] = useState([]);
     const [selectedUsers, setSelectedUsers] = useState([]);
+
+
     const Divider = () => {
         return (
             <hr
