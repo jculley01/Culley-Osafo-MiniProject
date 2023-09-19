@@ -14,4 +14,6 @@ These two files are rendered through the chatbox component. The message.js file 
 ### createRoom.js
 A feature that was unable to be solved was for the user to be able to search for a user and to private message them within the application. This was attempted within the createRoom.js file but was unsuccessful. The approach to solving this issue was to retrieve the active user and selected user information and create a unique key for those two users. This key would then be used to create a new collection of messages within Google Firebase. With more time, this file should have been able to be modified to correctly handle this use case. To properly implement this when functional, the createRoom.js file would render the chatbox and message feature through itself, and the createRoom.js file would be the only component rendered through App.js. 
 ## Demo
+![Demo](https://github.com/jculley01/Culley-Osafo-MiniProject/assets/113144839/a6661972-75b9-4a72-817f-448052a560fd)
+
 
