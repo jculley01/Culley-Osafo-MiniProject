@@ -4,52 +4,35 @@ import {
     collection,
     orderBy,
     onSnapshot,
-    limit, doc, setDoc,
+    limit,
 } from "firebase/firestore";
 import { db } from "../firebase/firebase";
 import Message from "./message";
 import SendMessage from "./sendMessage";
 
-const ChatBox = (collectionReference) => {
+const ChatBox = () => {
     const [messages, setMessages] = useState([]);
     const scroll = useRef();
 
     useEffect(() => {
-        // Make sure collectionReference is available before proceeding
-        if (collectionReference) {
-            console.log("CoolectionReff: ",collectionReference);
-            const myCollec = collection(db, collectionReference);
+        const q = query(
+            collection(db, "messages"),
+            orderBy("createdAt", "desc"),
+            limit(50)
+        );
 
-            const q = query(
-                myCollec,
-                orderBy("createdAt", "desc"),
-                limit(50)
-            );
-
-            const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
-                const fetchedMessages = [];
-                QuerySnapshot.forEach((doc) => {
-                    fetchedMessages.push({ ...doc.data(), id: doc.id });
-                });
-                const sortedMessages = fetchedMessages.sort(
-                    (a, b) => a.createdAt - b.createdAt
-                );
-                setMessages(sortedMessages);
+        const unsubscribe = onSnapshot(q, (QuerySnapshot) => {
+            const fetchedMessages = [];
+            QuerySnapshot.forEach((doc) => {
+                fetchedMessages.push({ ...doc.data(), id: doc.id });
             });
-
-            // Add an initial document to the collection if it doesn't exist
-            const initialDocRef = doc(db, collectionReference, 'initialDocument');
-            setDoc(initialDocRef, { /* Your initial data */ }, { merge: true })
-                .then(() => {
-                    console.log('Initial document added or updated successfully.');
-                })
-                .catch((error) => {
-                    console.error('Error adding initial document:', error);
-                });
-
-            return () => unsubscribe;
-        }
-    }, [collectionReference]);
+            const sortedMessages = fetchedMessages.sort(
+                (a, b) => a.createdAt - b.createdAt
+            );
+            setMessages(sortedMessages);
+        });
+        return () => unsubscribe;
+    }, []);
 
     return (
         <main className="chat-box">

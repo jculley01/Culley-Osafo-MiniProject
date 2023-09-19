@@ -36,7 +36,8 @@ function App() {
                 <Welcome />
             ) : (
                 <>
-                    <CreateRoom user = {user}/>
+                    <Search/>
+                    <ChatBox/>
                 </>
             )}
         </div>
